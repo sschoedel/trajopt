@@ -10,10 +10,9 @@ import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend for saving plots
 import matplotlib.pyplot as plt
 import time
-import mujoco
-import mujoco.viewer
 from pendulum_model import PendulumModel
 from trajopt_solver import TrajectoryOptimizer
+from visualize_mujoco import visualize_trajectory
 
 
 def plot_trajectory(times, states, controls, model):
@@ -95,104 +94,6 @@ def plot_trajectory(times, states, controls, model):
     print("Plot saved to pendulum_result.png")
     # Don't block - just save the plot
     # plt.show()
-
-
-def visualize_mujoco(times, states, controls, model_path='pendulum.xml', playback_speed=1.0):
-    """
-    Visualize pendulum trajectory in MuJoCo viewer.
-
-    Args:
-        times: Time array (N+1,)
-        states: State array (4, N+1) - [x, theta, x_dot, theta_dot]
-        controls: Control array (1, N) - [F]
-        model_path: Path to MuJoCo XML model file
-        playback_speed: Playback speed multiplier (1.0 = real-time)
-    """
-    # Load MuJoCo model
-    model = mujoco.MjModel.from_xml_path(model_path)
-    data = mujoco.MjData(model)
-
-    # Get start and goal states
-    start_state = states[:, 0]
-    goal_state = states[:, -1]
-
-    # Position the start and goal markers (cart position only)
-    start_marker_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, 'start_marker')
-    goal_marker_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, 'goal_marker')
-
-    # Set marker positions
-    model.body_pos[start_marker_id] = [start_state[0], 0, 0.05]
-    model.body_pos[goal_marker_id] = [goal_state[0], 0, 0.05]
-
-    print("=" * 60)
-    print("MuJoCo Pendulum Visualization")
-    print("=" * 60)
-    print(f"Trajectory duration: {times[-1]:.2f} seconds")
-    print(f"Number of waypoints: {len(times)}")
-    print(f"Playback speed: {playback_speed}x")
-    print()
-    print("Controls:")
-    print("  - Right Click + Drag: Rotate view")
-    print("  - Scroll: Zoom")
-    print("  - Close window (or ESC) to exit")
-    print("=" * 60)
-    print()
-
-    # Set up animation with passive viewer
-    start_time = time.time()
-
-    # Initialize to starting position
-    state = states[:, 0]
-    x_cart, theta, x_dot, theta_dot = state
-
-    # qpos for pendulum: [cart_position, pole_angle]
-    data.qpos[0] = x_cart
-    data.qpos[1] = theta
-    mujoco.mj_forward(model, data)
-
-    # Animation loop with callback
-    def update_state(t_elapsed):
-        """Update function called by viewer"""
-        traj_time = (t_elapsed * playback_speed) % times[-1]  # Loop
-
-        # Interpolate state at current time
-        idx = np.searchsorted(times, traj_time)
-        if idx == 0:
-            state = states[:, 0]
-        elif idx >= len(times):
-            state = states[:, -1]
-        else:
-            # Linear interpolation
-            t0, t1 = times[idx - 1], times[idx]
-            s0, s1 = states[:, idx - 1], states[:, idx]
-            alpha_interp = (traj_time - t0) / (t1 - t0)
-            state = s0 + alpha_interp * (s1 - s0)
-
-        x_cart, theta, x_dot, theta_dot = state
-
-        # Set cart position and pole angle
-        data.qpos[0] = x_cart
-        data.qpos[1] = theta
-
-        # Update physics
-        mujoco.mj_forward(model, data)
-
-    # Try to launch viewer
-    try:
-        # Use the simpler launch function
-        with mujoco.viewer.launch_passive(model, data) as viewer:
-            while viewer.is_running():
-                elapsed = time.time() - start_time
-                update_state(elapsed)
-                viewer.sync()
-                time.sleep(0.01)
-    except RuntimeError as e:
-        print("\n" + "="*60)
-        print("Note: MuJoCo passive viewer requires mjpython on macOS")
-        print("="*60)
-        print("\nAlternative: View the trajectory animation using the saved plot:")
-        print("  pendulum_result.png")
-        print("="*60)
 
 
 def main():
@@ -318,7 +219,7 @@ def main():
             print("\nLaunching MuJoCo visualization...")
             print("(Close the MuJoCo window to exit)")
             print()
-            visualize_mujoco(times, states, controls, model_path='pendulum.xml', playback_speed=1.0)
+            visualize_trajectory(times, states, controls, model_path='pendulum.xml', playback_speed=1.0)
         except RuntimeError:
             print("\nMuJoCo visualization not available on this system.")
             print("Check the saved plot: pendulum_result.png")
