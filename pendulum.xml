@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<mujoco model="pendulum">
+  <compiler angle="radian"/>
+
+  <option gravity="0 0 -9.81" timestep="0.01"/>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" width="512" height="512"
+             rgb1="0.2 0.3 0.2" rgb2="0.3 0.4 0.3"/>
+    <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+    <!-- Ground plane -->
+    <geom name="ground" type="plane" size="50 50 0.1" material="grid"/>
+
+    <!-- Cart (slides along x-axis) -->
+    <body name="cart" pos="0 0 0.3">
+      <!-- Slider joint (translation along x-axis) -->
+      <joint name="cart_slider" type="slide" axis="1 0 0" limited="false" damping="0.1"/>
+
+      <!-- Cart visualization (box) -->
+      <geom name="cart_body" type="box" size="0.2 0.15 0.1" rgba="0.2 0.2 0.8 1" mass="1.0"/>
+
+      <!-- Pendulum pole (attached to cart with revolute joint) -->
+      <body name="pole" pos="0 0 0">
+        <!-- Revolute joint around y-axis (pole swings in x-z plane) -->
+        <joint name="pole_hinge" type="hinge" axis="0 1 0" limited="false" damping="0.01"/>
+
+        <!-- Pole visualization (capsule from joint to tip) -->
+        <!-- Length is 0.5m, so tip is at (0, 0, 0.5) in pole frame -->
+        <geom name="pole_body" type="capsule" size="0.02" fromto="0 0 0 0 0 0.5" rgba="0.8 0.2 0.2 1" mass="0.1"/>
+
+        <!-- Pole tip marker (small sphere at end) -->
+        <geom name="pole_tip" type="sphere" size="0.04" pos="0 0 0.5" rgba="0.9 0.3 0.3 1" mass="0.01"/>
+      </body>
+    </body>
+
+    <!-- Start position marker (green) -->
+    <body name="start_marker" pos="0 0 0.05">
+      <geom name="start_base" type="cylinder" size="0.3 0.02" rgba="0.2 0.8 0.2 0.6"/>
+      <geom name="start_post" type="cylinder" size="0.05 0.2" rgba="0.2 0.8 0.2 0.8" pos="0 0 0.1"/>
+    </body>
+
+    <!-- Goal position marker (red) -->
+    <body name="goal_marker" pos="0 0 0.05">
+      <geom name="goal_base" type="cylinder" size="0.3 0.02" rgba="0.8 0.2 0.2 0.6"/>
+      <geom name="goal_post" type="cylinder" size="0.05 0.2" rgba="0.8 0.2 0.2 0.8" pos="0 0 0.1"/>
+    </body>
+
+    <!-- Light -->
+    <light pos="3 3 6" dir="-0.5 -0.5 -1" diffuse="0.8 0.8 0.8"/>
+    <light pos="-3 -3 5" dir="0.5 0.5 -1" diffuse="0.4 0.4 0.4"/>
+  </worldbody>
+</mujoco>

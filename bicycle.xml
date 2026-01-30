@@ -1,0 +1,77 @@
+<?xml version="1.0" ?>
+<mujoco model="bicycle">
+  <compiler angle="radian"/>
+
+  <option gravity="0 0 -9.81" timestep="0.01"/>
+
+  <asset>
+    <texture name="grid" type="2d" builtin="checker" width="512" height="512"
+             rgb1="0.2 0.3 0.2" rgb2="0.3 0.4 0.3"/>
+    <material name="grid" texture="grid" texrepeat="1 1" texuniform="true" reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+    <!-- Ground plane -->
+    <geom name="ground" type="plane" size="50 50 0.1" material="grid"/>
+
+    <!-- Bicycle frame (main body) - free floating with position and orientation DOFs -->
+    <body name="frame" pos="0 0 0.5">
+      <!-- X position -->
+      <freejoint/>
+
+      <!-- Frame visualization (main tube) -->
+      <geom name="frame_main" type="capsule" size="0.04" fromto="-0.5 0 0 0.8 0 0" rgba="0.2 0.2 0.8 1"/>
+
+      <!-- Seat post and seat -->
+      <geom name="seat_post" type="cylinder" size="0.02 0.15" rgba="0.2 0.2 0.8 1" pos="-0.3 0 0.15"/>
+      <geom name="seat" type="box" size="0.1 0.08 0.03" rgba="0.1 0.1 0.1 1" pos="-0.3 0 0.32"/>
+
+      <!-- Down tube -->
+      <geom name="down_tube" type="capsule" size="0.03" fromto="0.8 0 0 0 0 -0.3" rgba="0.2 0.2 0.8 1"/>
+
+      <!-- Rear wheel (fixed to frame at rear axle) -->
+      <geom name="rear_wheel" type="cylinder" size="0.3 0.03" rgba="0.1 0.1 0.1 1"
+            pos="-0.5 0 -0.3" euler="1.5708 0 0"/>
+      <geom name="rear_axle" type="cylinder" size="0.015 0.05" rgba="0.3 0.3 0.3 1"
+            pos="-0.5 0 -0.3" euler="1.5708 0 0"/>
+
+      <!-- Front fork (steerable) -->
+      <body name="front_fork" pos="1.25 0 0.05">
+        <!-- Steering joint (hinge around vertical axis) -->
+        <joint name="steering" type="hinge" axis="0 0 1" limited="true" range="-0.7 0.7" damping="0.1"/>
+
+        <!-- Fork tubes -->
+        <geom name="fork_left" type="capsule" size="0.02" fromto="-0.05 -0.05 0 0.4 -0.05 -0.35" rgba="0.2 0.2 0.8 1"/>
+        <geom name="fork_right" type="capsule" size="0.02" fromto="-0.05 0.05 0 0.4 0.05 -0.35" rgba="0.2 0.2 0.8 1"/>
+
+        <!-- Handlebars -->
+        <geom name="handlebar" type="capsule" size="0.02" fromto="0 -0.25 0.05 0 0.25 0.05" rgba="0.1 0.1 0.1 1"/>
+        <geom name="stem" type="cylinder" size="0.015 0.08" rgba="0.1 0.1 0.1 1" pos="0 0 0.08"/>
+
+        <!-- Front wheel -->
+        <geom name="front_wheel" type="cylinder" size="0.3 0.03" rgba="0.1 0.1 0.1 1"
+              pos="0.4 0 -0.35" euler="1.5708 0 0"/>
+        <geom name="front_axle" type="cylinder" size="0.015 0.05" rgba="0.3 0.3 0.3 1"
+              pos="0.4 0 -0.35" euler="1.5708 0 0"/>
+      </body>
+    </body>
+
+    <!-- Start position marker (green) -->
+    <body name="start_marker" pos="0 0 0.05">
+      <geom name="start_base" type="cylinder" size="0.5 0.02" rgba="0.2 0.8 0.2 0.6"/>
+      <geom name="start_arrow" type="box" size="0.3 0.1 0.05" rgba="0.2 0.8 0.2 0.8" pos="0.3 0 0.1"/>
+      <geom name="start_post" type="cylinder" size="0.05 0.3" rgba="0.2 0.8 0.2 0.8" pos="0 0 0.15"/>
+    </body>
+
+    <!-- Goal position marker (red) -->
+    <body name="goal_marker" pos="0 0 0.05">
+      <geom name="goal_base" type="cylinder" size="0.5 0.02" rgba="0.8 0.2 0.2 0.6"/>
+      <geom name="goal_arrow" type="box" size="0.3 0.1 0.05" rgba="0.8 0.2 0.2 0.8" pos="0.3 0 0.1"/>
+      <geom name="goal_post" type="cylinder" size="0.05 0.3" rgba="0.8 0.2 0.2 0.8" pos="0 0 0.15"/>
+    </body>
+
+    <!-- Light -->
+    <light pos="5 5 10" dir="-0.5 -0.5 -1" diffuse="0.8 0.8 0.8"/>
+    <light pos="-5 -5 8" dir="0.5 0.5 -1" diffuse="0.4 0.4 0.4"/>
+  </worldbody>
+</mujoco>

@@ -1,0 +1,5 @@
+casadi>=3.6.0
+numpy>=1.21.0
+matplotlib>=3.5.0
+mujoco>=3.0.0
+pin>=3.0.0  # Pinocchio for modular dynamics

@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<robot name="pendulum">
+  <!-- World link (fixed reference) -->
+  <link name="world"/>
+
+  <!-- Cart link (slides along x-axis) -->
+  <link name="cart">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.1"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.4 0.3 0.2"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <!-- Prismatic joint (cart slides along x-axis) -->
+  <joint name="cart_slider" type="prismatic">
+    <parent link="world"/>
+    <child link="cart"/>
+    <origin xyz="0 0 0.3" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-10.0" upper="10.0" effort="100.0" velocity="10.0"/>
+  </joint>
+
+  <!-- Pendulum pole link (rotates around y-axis) -->
+  <link name="pole">
+    <inertial>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+      <mass value="0.1"/>
+      <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.25" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.5"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <!-- Revolute joint (pole rotates around y-axis at cart) -->
+  <joint name="pole_hinge" type="revolute">
+    <parent link="cart"/>
+    <child link="pole"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.14159" upper="3.14159" effort="100.0" velocity="10.0"/>
+  </joint>
+
+</robot>
