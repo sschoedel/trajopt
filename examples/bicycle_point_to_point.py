@@ -9,14 +9,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
+# Add parent directory to path for imports
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
 # Try Pinocchio-based model first, fall back to hand-written model
 try:
-    from bicycle_model_pinocchio import BicycleModelPinocchio as BicycleModel
+    from models.bicycle_model_pinocchio import BicycleModelPinocchio as BicycleModel
     print("Using Pinocchio-based bicycle model")
     USE_PINOCCHIO = True
 except ImportError as e:
     print(f"Pinocchio not available ({e}), using hand-written model")
-    from bicycle_model import BicycleModel
+    from models.bicycle_model import BicycleModel
     USE_PINOCCHIO = False
 
 from trajopt_solver import TrajectoryOptimizer
@@ -94,8 +99,8 @@ def plot_trajectory(times, states, controls, model):
     ax.grid(True)
 
     plt.tight_layout()
-    plt.savefig('/Users/samschoedel/git/trajopt/trajectory_result.png', dpi=150)
-    print("Plot saved to trajectory_result.png")
+    plt.savefig('results/trajectory_result.png', dpi=150)
+    print("Plot saved to results/trajectory_result.png")
     plt.show()
 
 
@@ -120,7 +125,7 @@ def main():
 
     # Create bicycle model
     if USE_PINOCCHIO:
-        model = BicycleModel(model_path='bicycle.urdf', L=L, m=m)
+        model = BicycleModel(model_path='robots/bicycle.urdf', L=L, m=m)
     else:
         model = BicycleModel(L=L, m=m)
 
@@ -212,7 +217,7 @@ def main():
         print("Launching MuJoCo visualization...")
         print("(Close the MuJoCo window to exit)")
         print()
-        visualize_trajectory(times, states, controls, model_path='bicycle.xml', playback_speed=1.0)
+        visualize_trajectory(times, states, controls, model_path='robots/bicycle.xml', playback_speed=1.0)
 
     else:
         print(f"✗ Optimization failed after {solve_time:.2f} seconds")

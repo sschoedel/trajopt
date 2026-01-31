@@ -5,7 +5,7 @@ Implements the dynamics of a cart-pole system (inverted pendulum).
 """
 
 import numpy as np
-from robot_model_base import RobotModelBase
+from .robot_model_base import RobotModelBase
 
 
 class PendulumModel(RobotModelBase):

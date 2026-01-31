@@ -7,7 +7,7 @@ implements kinematic bicycle dynamics.
 
 import numpy as np
 import pinocchio as pin
-from bicycle_model_base import BicycleModelBase
+from .bicycle_model_base import BicycleModelBase
 
 
 class BicycleModelPinocchio(BicycleModelBase):

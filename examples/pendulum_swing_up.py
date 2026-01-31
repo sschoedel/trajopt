@@ -10,7 +10,13 @@ import matplotlib
 matplotlib.use('Agg')  # Use non-interactive backend for saving plots
 import matplotlib.pyplot as plt
 import time
-from pendulum_model import PendulumModel
+
+# Add parent directory to path for imports
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from models.pendulum_model import PendulumModel
 from trajopt_solver import TrajectoryOptimizer
 from visualize_mujoco import visualize_trajectory
 
@@ -90,8 +96,8 @@ def plot_trajectory(times, states, controls, model):
     ax.grid(True)
 
     plt.tight_layout()
-    plt.savefig('/Users/samschoedel/git/trajopt/pendulum_result.png', dpi=150)
-    print("Plot saved to pendulum_result.png")
+    plt.savefig('results/pendulum_result.png', dpi=150)
+    print("Plot saved to results/pendulum_result.png")
     # Don't block - just save the plot
     # plt.show()
 
@@ -219,10 +225,10 @@ def main():
             print("\nLaunching MuJoCo visualization...")
             print("(Close the MuJoCo window to exit)")
             print()
-            visualize_trajectory(times, states, controls, model_path='pendulum.xml', playback_speed=1.0)
+            visualize_trajectory(times, states, controls, model_path='robots/pendulum.xml', playback_speed=1.0)
         except RuntimeError:
             print("\nMuJoCo visualization not available on this system.")
-            print("Check the saved plot: pendulum_result.png")
+            print("Check the saved plot: results/pendulum_result.png")
             pass
 
     else:

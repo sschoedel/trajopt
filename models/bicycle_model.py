@@ -5,7 +5,7 @@ Hand-written implementation of the kinematic bicycle dynamics.
 """
 
 import numpy as np
-from bicycle_model_base import BicycleModelBase
+from .bicycle_model_base import BicycleModelBase
 
 
 class BicycleModel(BicycleModelBase):

@@ -5,7 +5,7 @@ Defines the common interface that all bicycle model implementations must follow.
 """
 
 from abc import ABC, abstractmethod
-from robot_model_base import RobotModelBase
+from .robot_model_base import RobotModelBase
 
 
 class BicycleModelBase(RobotModelBase):
